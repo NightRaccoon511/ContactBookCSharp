@@ -1,109 +1,100 @@
-﻿namespace ContactBook;
+namespace ContactBook;
 
-public class Contact : IEquatable<Contact>
+public class ContactBook
 {
-    private string fname = default!;
-    private string lname = default!;
-    private string phone = default!;
-    private string email = default!;
+    public const string NEXT_PAGE = "+";
+    public const string PREV_PAGE = "-";
+    public const string GOTO_PAGE = "G";
+    public const string PAGE_SIZE = "S";
+    public const string CREATE_CONTACT = "C";
+    public const string REVIEW_CONTACT = "R";
+    public const string UPDATE_CONTACT = "U";
+    public const string DELETE_CONTACT = "D";
+    public const string FIND_CONTACTs = "F";
+    public const string ORDER_CONTACTS = "O";
+    public const string DEDUPLICATE_CONTACTS = "M";
+    public const string EXIT = "X";
 
-    public Contact(string fname = "", string lname = "", string phone = "", string email = "")
+        public readonly string[] COMMANDS = new string[]
+        {
+    NEXT_PAGE, PREV_PAGE,  GOTO_PAGE,   PAGE_SIZE, CREATE_CONTACT,
+    REVIEW_CONTACT, UPDATE_CONTACT,  DELETE_CONTACT, FIND_CONTACTs,
+    ORDER_CONTACTS,   DEDUPLICATE_CONTACTS,  EXIT
+        };
+
+        public ContactBook()
     {
-        SetFName(fname);
-        SetLName(lname);
-        SetPhone(phone);
-        SetEmail(email);
+        
+    }
+
+    public void Start()
+    {
+        ShowWelcomeScreen();
+
+        string input;
+        do
+        {
+            ShowContacts();
+
+            do
+        {
+            ShowInputootions();
+            input = GetInput();
+        }
+        while(!IsValidInput(input));
+
+        ProcessInput(input);
+        }
+        while(!ConfirmExit());
+
+        ShowExitScreen();
+    }
+
+    private void ShowWelcomeScreen()
+    {
+     Console.WriteLine("Welcome to Eliud's Contact Book!");
+     PressEnterToContinue();
+    }
+    
+
+    private void ShowContacts()
+    {
 
     }
 
-    public Contact()
-    {
+    private void ShowInputootions()
+    {;
     }
 
-    private void SetLName(string lname)
+    private string GetInput()
     {
-        throw new NotImplementedException();
+      return "";
     }
 
-    private void SetFName(string fname)
+    private bool IsValidInput(string input)
     {
-        throw new NotImplementedException();
+       return true;
     }
 
-    public string GetFName()
+    private void ProcessInput(string input)
     {
-        return fname;
+    
     }
 
-public string GetLname()
+    private bool ConfirmExit()
     {
-        return lname;
+      return true;
     }
 
-    public string GetPhone()
+    private void ShowExitScreen()
     {
-        return phone;
+   
     }
 
-    public string GetEmail()
+    private void PressEnterToContinue()
     {
-        return email;
-    }
-
-    public void SetFname(string fname)
-    {
-        this.fname = fname;
-    }
-
-    public void SetLname(string lname)
-    {
-        this.lname = lname;
-    }
-
-    public void SetPhone(string phone)
-    {
-        this.phone = phone;
-    }
-
-    public void SetEmail(string email)
-    {
-        this.email = email;
-    }
-
-    public override string ToString()
-    {
-        return $"Contact[fname={fname}, lname={lname}, phone={phone}, email={email}]";
-    }
-
-    public bool Equals(Contact? other)
-    {
-       if(other is null) { return false; }
-
-        if (ReferenceEquals(this, other)) { return true; }
-
-        return string.Equals(fname, other.fname)
-            && string.Equals(lname, other.lname)
-            && string.Equals(phone, other.phone)
-            && string.Equals(email, other.email);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as Contact);
-    }
-
-    public static bool operator==(Contact? x, Contact? y)
-    {
-        return(x is null) ? (y is null) : x.Equals(y);
-    }
-
-    public static bool operator !=(Contact? x, Contact? y)
-    {
-        return !(x == y);
-    }
-
-    public override int GetHashCode()
-    {
-       return HashCode.Combine(fname, lname, phone, email);
+        Console.Write("Press Enter to continue...");
+        while(Console.ReadKey(true).Key != ConsoleKey.Enter);
     }
 }
+
