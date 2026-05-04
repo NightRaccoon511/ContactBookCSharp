@@ -20,14 +20,14 @@ public class Contact : IEquatable<Contact>
     {
     }
 
-    private void SetLName(string lname)
+    private string SetLName(string lname)
     {
-        throw new NotImplementedException();
+         return this.lname = lname;
     }
 
-    private void SetFName(string fname)
+    private string SetFName(string fname)
     {
-        throw new NotImplementedException();
+        return this.fname = fname;
     }
 
     public string GetFName()
