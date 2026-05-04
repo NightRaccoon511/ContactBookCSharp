@@ -22,9 +22,10 @@ public class ContactBook
     ORDER_CONTACTS,   DEDUPLICATE_CONTACTS,  EXIT
         };
 
-        public ContactBook()
+        private List<Contact> allContacts;
+        public ContactBook(List<Contact> contacts = null!)
     {
-        
+        allContacts = (contacts == null) ? new List<Contact>() : contacts;
     }
 
     public void Start()
@@ -56,10 +57,44 @@ public class ContactBook
      PressEnterToContinue();
     }
     
-
     private void ShowContacts()
     {
+        Console.Clear();
 
+if(allContacts.Count <= 0)
+        {
+            Console.WriteLine("No contacts found.");
+        }
+        else
+        {
+            int indexCol = -Math.Max("#".Length, allContacts.Count.ToString().Length);
+            int fnameCol = -Math.Max("First Name".Length, allContacts.Max(c => c.GetFName()?.Length ?? 0));
+            int lnameCol = -Math.Max("Last Name".Length, allContacts.Max(c => c.GetLname()?.Length ?? 0));
+            int phoneCol = -Math.Max("Phone".Length, allContacts.Max(c => c.GetPhone()?.Length ?? 0));
+            int emailCol = -Math.Max("Email".Length, allContacts.Max(c => c.GetEmail()?.Length ?? 0));
+
+           Console.WriteLine(""
+           + "{0, " + indexCol + "}  "
+           + "{1, " + fnameCol + "}  "
+           + "{2, " + lnameCol + "}  " 
+           + "{3, " + phoneCol + "}  "
+           + "{4, " + emailCol + "}  ",
+           "#", "First Name", "Last Name", "Phone", "Email");
+           Console.WriteLine(new string('─', 80));
+
+            for(int i = 0; i < allContacts.Count; i++)
+            {
+                Contact c = allContacts[i];
+
+                Console.WriteLine(""
+               + "{0, " + indexCol + "}  "
+               + "{1, " + fnameCol + "}  "
+               + "{2, " + lnameCol + "}  "
+               + "{3, " + phoneCol + "}  "
+               + "{4, " + emailCol + "}  ",
+               i, c.GetFName(), c.GetLname(), c.GetPhone(), c.GetEmail());
+            }
+        }
     }
 
     private void ShowInputootions()
