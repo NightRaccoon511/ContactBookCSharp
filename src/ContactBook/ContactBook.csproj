@@ -169,10 +169,10 @@ if(allContacts.Count <= 0)
       return Confirm("Do you want to exit?", NO);
     }
 
-
     private void ShowExitScreen()
     {
-   
+   Console.Clear();
+   Console.WriteLine("Thank you for using Eliud's Contact Book. Goodbye!");
     }
 
     private void PressEnterToContinue()
