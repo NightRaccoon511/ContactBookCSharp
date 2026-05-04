@@ -35,10 +35,9 @@ public class ContactBook
         string input;
         do
         {
-            ShowContacts();
-
             do
         {
+            ShowContacts();
             ShowInputootions();
             input = GetInput();
         }
@@ -108,17 +107,35 @@ if(allContacts.Count <= 0)
     }
 
     private void ShowInputootions()
-    {;
+    {
+        string inputOprions = ""
+        + $"[{NEXT_PAGE}] Next Page | [{CREATE_CONTACT}] Create Contact | [{DELETE_CONTACT}] Delete Contact | [{DEDUPLICATE_CONTACTS}] Deduplicate Contacts\n"
+        + $"[{PREV_PAGE}] Prev Page | [{REVIEW_CONTACT}] Review Contact | [{FIND_CONTACTs }] Find Contacts  | [{PAGE_SIZE           }] Change Page Size\n"
+        + $"[{GOTO_PAGE}] Goto Page | [{UPDATE_CONTACT}] Update Contact | [{ORDER_CONTACTS}] Order Contacts | [{EXIT                }] Exit\n"
+        + $"\n> ";
+
+        Console.WriteLine();
+        Console.Write(inputOprions);
     }
 
     private string GetInput()
     {
-      return "";
+      return Console.ReadLine()!.ToUpper();
     }
 
     private bool IsValidInput(string input)
     {
-       return true;
+       if(!COMMANDS.Contains(input))
+         {
+          Console.WriteLine("ERROR: Invalid input. Please try again.");
+          PressEnterToContinue();
+          return false;
+         }
+        else
+        {
+            return true;
+        }
+       
     }
 
     private void ProcessInput(string input)
