@@ -10,7 +10,7 @@ public class ContactBook
     public const string REVIEW_CONTACT = "R";
     public const string UPDATE_CONTACT = "U";
     public const string DELETE_CONTACT = "D";
-    public const string FIND_CONTACTs = "F";
+    public const string FIND_CONTACTS = "F";
     public const string ORDER_CONTACTS = "O";
     public const string DEDUPLICATE_CONTACTS = "M";
     public const string EXIT = "X";
@@ -18,7 +18,7 @@ public class ContactBook
         public readonly string[] COMMANDS = new string[]
         {
     NEXT_PAGE, PREV_PAGE,  GOTO_PAGE,   PAGE_SIZE, CREATE_CONTACT,
-    REVIEW_CONTACT, UPDATE_CONTACT,  DELETE_CONTACT, FIND_CONTACTs,
+    REVIEW_CONTACT, UPDATE_CONTACT,  DELETE_CONTACT, FIND_CONTACTS,
     ORDER_CONTACTS,   DEDUPLICATE_CONTACTS,  EXIT
         };
 
@@ -110,7 +110,7 @@ if(allContacts.Count <= 0)
     {
         string inputOprions = ""
         + $"[{NEXT_PAGE}] Next Page | [{CREATE_CONTACT}] Create Contact | [{DELETE_CONTACT}] Delete Contact | [{DEDUPLICATE_CONTACTS}] Deduplicate Contacts\n"
-        + $"[{PREV_PAGE}] Prev Page | [{REVIEW_CONTACT}] Review Contact | [{FIND_CONTACTs }] Find Contacts  | [{PAGE_SIZE           }] Change Page Size\n"
+        + $"[{PREV_PAGE}] Prev Page | [{REVIEW_CONTACT}] Review Contact | [{FIND_CONTACTS }] Find Contacts  | [{PAGE_SIZE           }] Change Page Size\n"
         + $"[{GOTO_PAGE}] Goto Page | [{UPDATE_CONTACT}] Update Contact | [{ORDER_CONTACTS}] Order Contacts | [{EXIT                }] Exit\n"
         + $"\n> ";
 
@@ -140,8 +140,24 @@ if(allContacts.Count <= 0)
 
     private void ProcessInput(string input)
     {
-    
+     switch(input)
+        {
+    case  NEXT_PAGE: NextPage(); break;
+    case  PREV_PAGE: PrePage(); break;
+    case  GOTO_PAGE: GotoPage(); break;
+    case  PAGE_SIZE: PageSize(); break;
+    case  CREATE_CONTACT: CreateContact(); break;
+    case  REVIEW_CONTACT: ReviewContact(); break;
+    case  UPDATE_CONTACT: UpdateContact(); break;
+    case  DELETE_CONTACT: DeleteContact(); break;
+    case  FIND_CONTACTS: FindContacts(); break;
+    case  ORDER_CONTACTS: OrderContacts(); break;
+    case  DEDUPLICATE_CONTACTS: DeduplicateContacts(); break;
+    case  EXIT: Exit(); break;
+    default: break;
+        }
     }
+
 
     private bool ConfirmExit()
     {
@@ -157,6 +173,65 @@ if(allContacts.Count <= 0)
     {
         Console.Write("Press Enter to continue...");
         while(Console.ReadKey(true).Key != ConsoleKey.Enter);
+    }
+    private void NextPage()
+    {
+        Console.WriteLine("Next Page");
+    }
+
+    private void PrePage()
+    {
+        Console.WriteLine("Previous Page");
+    }
+
+    private void GotoPage()
+    {
+        Console.WriteLine("Goto Page");
+    }
+
+    private void PageSize()
+    {
+        Console.WriteLine("Page Size");
+    }
+
+    private void CreateContact()
+    {
+        Console.WriteLine("Create Contact");
+    }
+
+    private void ReviewContact()
+    {
+        Console.WriteLine("Review Contact");
+    }
+
+    private void UpdateContact()
+    {
+        Console.WriteLine("Update Contact");
+    }
+
+    private void DeleteContact()
+    {
+        Console.WriteLine("Delete Contact");
+    }
+
+    private void FindContacts()
+    {
+        Console.WriteLine("Find Contacts");
+    }
+
+    private void OrderContacts()
+    {
+        Console.WriteLine("Order Contacts");
+    }
+
+    private void DeduplicateContacts()
+    {
+        Console.WriteLine("Deduplicate Contacts");
+    }
+
+    private void Exit()
+    {
+        Console.WriteLine("Exit");
     }
 }
 
