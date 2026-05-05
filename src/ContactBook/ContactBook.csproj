@@ -1,5 +1,3 @@
-using System.Formats.Asn1;
-
 namespace ContactBook;
 
 public class ContactBook
@@ -22,25 +20,25 @@ public class ContactBook
     public const string DEDUPLICATE_CONTACTS = "M";
     public const string EXIT = "X";
 
-        public readonly string[] COMMANDS = new string[]
-        {
-    NEXT_PAGE, PREV_PAGE,  GOTO_PAGE,   PAGE_SIZE, CREATE_CONTACT,
-    REVIEW_CONTACT, UPDATE_CONTACT,  DELETE_CONTACT, FIND_CONTACTS,
-    ORDER_CONTACTS,   DEDUPLICATE_CONTACTS,  EXIT
-        };
-
-        private List<Contact> allContacts;
-        private int page;
-        private int size;
-        private bool isExit;
-
-        public ContactBook(List<Contact> contacts = null!)
+    public readonly string[] COMMANDS = new string[]
     {
-        allContacts = (contacts == null) ? new List<Contact>() : contacts;
+        NEXT_PAGE, PREV_PAGE, GOTO_PAGE, PAGE_SIZE, CREATE_CONTACT,
+        REVIEW_CONTACT, UPDATE_CONTACT, DELETE_CONTACT, FIND_CONTACTS,
+        ORDER_CONTACTS, DEDUPLICATE_CONTACTS, EXIT
+    };
+
+    private List<Contact> allContacts;
+    private int page;
+    private int size;
+    private bool isExit;
+
+    public ContactBook(List<Contact> contacts = null!)
+    {
+        allContacts = contacts ?? new List<Contact>();
         page = 1;
         size = 10;
         isExit = false;
-  }
+    }
 
     public void Start()
     {
@@ -50,26 +48,26 @@ public class ContactBook
         do
         {
             do
-        {
-            ShowContacts();
-            ShowInputootions();
-            input = GetInput();
-        }
-        while(!IsValidInput(input));
+            {
+                ShowContacts();
+                ShowInputOptions();
+                input = GetInput();
+            }
+            while (!IsValidInput(input));
 
-        ProcessInput(input);
-        }
-        while(!ConfirmExit());
+            ProcessInput(input);
+
+        } while (!ConfirmExit());
 
         ShowExitScreen();
     }
 
     private void ShowWelcomeScreen()
     {
-     Console.WriteLine("Welcome to Eliud's Contact Book!");
-     PressEnterToContinue();
+        Console.WriteLine("Welcome to Eliud's Contact Book!");
+        PressEnterToContinue();
     }
-    
+
     private void ShowContacts()
     {
         ShowContacts(allContacts, page, size);
@@ -79,223 +77,164 @@ public class ContactBook
     {
         Console.Clear();
 
-if(contacts.Count <= 0)
+        if (contacts.Count == 0)
         {
             Console.WriteLine("No contacts found.");
+            return;
         }
-        else
-        {
-            int indexCol = Math.Max("#".Length, contacts.Count.ToString().Length);
-            int fnameCol = Math.Max("First Name".Length, contacts.Max(c => c.GetFName()?.Length ?? 0));
-            int lnameCol = Math.Max("Last Name".Length, contacts.Max(c => c.GetLname()?.Length ?? 0));
-            int phoneCol = Math.Max("Phone".Length, contacts.Max(c => c.GetPhone()?.Length ?? 0));
-            int emailCol = Math.Max("Email".Length, contacts.Max(c => c.GetEmail()?.Length ?? 0));
 
-            Console.WriteLine(""
-            + "{0, " + -indexCol + "}  "
-            + "{1, " + -fnameCol + "}  "
-            + "{2, " + -lnameCol + "}  "
-            + "{3, " + -phoneCol + "}  "
-            + "{4, " + -emailCol + "}  ",
+        int indexCol = Math.Max("#".Length, contacts.Count.ToString().Length);
+        int fnameCol = Math.Max("First Name".Length, contacts.Max(c => c.GetFName()?.Length ?? 0));
+        int lnameCol = Math.Max("Last Name".Length, contacts.Max(c => c.GetLname()?.Length ?? 0));
+        int phoneCol = Math.Max("Phone".Length, contacts.Max(c => c.GetPhone()?.Length ?? 0));
+        int emailCol = Math.Max("Email".Length, contacts.Max(c => c.GetEmail()?.Length ?? 0));
+
+        Console.WriteLine(
+            "{0,-" + indexCol + "}  {1,-" + fnameCol + "}  {2,-" + lnameCol + "}  {3,-" + phoneCol + "}  {4,-" + emailCol + "}",
             "#", "First Name", "Last Name", "Phone", "Email");
-            Console.WriteLine(new string('─', (indexCol + 2 + fnameCol + 2 + lnameCol + 2 + phoneCol + 2 + emailCol)));
 
-            int n = contacts.Count;
-            int pageCount = PageCount(contacts, size);
-            int s = Math.Clamp((page - 1) * size, 0, n);
-            int e = Math.Clamp(s + size, 0, n);
+        Console.WriteLine(new string('─', indexCol + fnameCol + lnameCol + phoneCol + emailCol + 10));
 
-            for (int i = s; i < e; i++)
-            {
-                Contact c = contacts[i];
+        int n = contacts.Count;
+        int pageCount = PageCount(contacts, size);
+        int s = Math.Clamp((page - 1) * size, 0, n);
+        int e = Math.Clamp(s + size, 0, n);
 
-                Console.WriteLine(""
-               + "{0, " + -indexCol + "}  "
-               + "{1, " + -fnameCol + "}  "
-               + "{2, " + -lnameCol + "}  "
-               + "{3, " + -phoneCol + "}  "
-               + "{4, " + -emailCol + "}  ",
-               (i + 1), c.GetFName(), c.GetLname(), c.GetPhone(), c.GetEmail());
-            }
+        for (int i = s; i < e; i++)
+        {
+            var c = contacts[i];
 
-            for(int i = 0; i < size - e + s; i++)
-            {
-                Console.WriteLine();
-            }
-            Console.WriteLine();
-            Console.WriteLine($"Page {page} of {pageCount} ({s + 1}-{e} of {n})");
+            Console.WriteLine(
+                "{0,-" + indexCol + "}  {1,-" + fnameCol + "}  {2,-" + lnameCol + "}  {3,-" + phoneCol + "}  {4,-" + emailCol + "}",
+                (i + 1), c.GetFName(), c.GetLname(), c.GetPhone(), c.GetEmail());
         }
-    }
-
-   
-    private void ShowInputootions()
-    {
-        string inputOprions = ""
-        + $"[{NEXT_PAGE}] Next Page | [{CREATE_CONTACT}] Create Contact | [{DELETE_CONTACT}] Delete Contact | [{DEDUPLICATE_CONTACTS}] Deduplicate Contacts\n"
-        + $"[{PREV_PAGE}] Prev Page | [{REVIEW_CONTACT}] Review Contact | [{FIND_CONTACTS }] Find Contacts  | [{PAGE_SIZE           }] Change Page Size\n"
-        + $"[{GOTO_PAGE}] Goto Page | [{UPDATE_CONTACT}] Update Contact | [{ORDER_CONTACTS}] Order Contacts | [{EXIT                }] Exit\n"
-        + $"\n> ";
 
         Console.WriteLine();
-        Console.Write(inputOprions);
+        Console.WriteLine($"Page {page} of {pageCount}");
+    }
+
+    private void ShowInputOptions()
+    {
+        Console.WriteLine();
+        Console.WriteLine($"[{NEXT_PAGE}] Next   | [{PREV_PAGE}] Prev   | [{GOTO_PAGE}] GoTo    | [{PAGE_SIZE}] Size");
+        Console.WriteLine($"[{CREATE_CONTACT}] Create | [{REVIEW_CONTACT}] Review | [{UPDATE_CONTACT}] Update");
+        Console.WriteLine($"[{DELETE_CONTACT}] Delete | [{FIND_CONTACTS}] Find   | [{ORDER_CONTACTS}] Order");
+        Console.WriteLine($"[{DEDUPLICATE_CONTACTS}] Deduplicate                      | [{EXIT}] Exit");
+        Console.Write("\n> ");
     }
 
     private string GetInput()
     {
-      return Console.ReadLine()!.ToUpper();
+        return Console.ReadLine()!.ToUpper();
     }
 
     private bool IsValidInput(string input)
     {
-       if(!COMMANDS.Contains(input))
-         {
-          Console.WriteLine("ERROR: Invalid input. Please try again.");
-          PressEnterToContinue();
-          return false;
-         }
-        else
+        if (!COMMANDS.Contains(input))
         {
-            return true;
+            Console.WriteLine("ERROR: Invalid input.");
+            PressEnterToContinue();
+            return false;
         }
-       
+        return true;
     }
 
     private void ProcessInput(string input)
     {
-     switch(input)
+        switch (input)
         {
-    case  NEXT_PAGE: NextPage(); break;
-    case  PREV_PAGE: PrevPage(); break;
-    case  GOTO_PAGE: GotoPage(); break;
-    case  PAGE_SIZE: PageSize(); break;
-    case  CREATE_CONTACT: CreateContact(); break;
-    case  REVIEW_CONTACT: ReviewContact(); break;
-    case  UPDATE_CONTACT: UpdateContact(); break;
-    case  DELETE_CONTACT: DeleteContact(); break;
-    case  FIND_CONTACTS: FindContacts(); break;
-    case  ORDER_CONTACTS: OrderContacts(); break;
-    case  DEDUPLICATE_CONTACTS: DeduplicateContacts(); break;
-    case  EXIT: Exit(); break;
-    default: break;
+            case NEXT_PAGE: NextPage(); break;
+            case PREV_PAGE: PrevPage(); break;
+            case GOTO_PAGE: GotoPage(); break;
+            case PAGE_SIZE: PageSize(); break;
+            case CREATE_CONTACT: CreateContact(); break;
+            case REVIEW_CONTACT: ReviewContact(); break;
+            case UPDATE_CONTACT: UpdateContact(); break;
+            case DELETE_CONTACT: DeleteContact(); break;
+            case FIND_CONTACTS: FindContacts(); break;
+            case ORDER_CONTACTS: OrderContacts(); break;
+            case DEDUPLICATE_CONTACTS: DeduplicateContacts(); break;
+            case EXIT: Exit(); break;
         }
     }
 
-
     private bool ConfirmExit()
     {
-      return (isExit) ? isExit = Confirm("Do you want to exit?", NO): false;
+        return isExit ? Confirm("Exit?", NO) : false;
     }
 
     private void ShowExitScreen()
     {
-   Console.Clear();
-   Console.WriteLine("Thank you for using Eliud's Contact Book. Goodbye!");
+        Console.Clear();
+        Console.WriteLine("Goodbye");
     }
 
     private void PressEnterToContinue()
     {
-        Console.Write("Press Enter to continue...");
-        while(Console.ReadKey(true).Key != ConsoleKey.Enter);
-    }
-    private void NextPage()
-    {
-        NextPage(allContacts, ref page, size);
-    }
-   
-    private void NextPage(List<Contact> contacts, ref int page, int size)
-    {
-        page = Math.Clamp(page + 1, 1,PageCount(contacts, size));
-    }
-    private void PrevPage()
-    {
-        PrevPage(allContacts, ref page, size);
-    }
-   
-    private void PrevPage(List<Contact> contacts, ref int page, int size)
-    {
-        page = Math.Clamp(page - 1, 1,PageCount(contacts, size));
+        Console.Write("Press Enter...");
+        while (Console.ReadKey(true).Key != ConsoleKey.Enter) ;
     }
 
-
-    private void GotoPage()
-    {
-        GotoPage(allContacts, ref page, size);
-    }
-    private void GotoPage(List<Contact> contacts, ref int page, int size)
-    {
-       page = GetInt("Enter page", 1, PageCount(contacts, size));
-    }
-
-    private void PageSize()
-    {
-       PageSize(ref page, ref size);
-    }
-
-    private void PageSize(ref int page, ref int size)
-    {
-        int max = Console.WindowHeight - 10;
-       size = GetInt("Enter page size", 1, max);
-       page = 1;
-    }
-
-    private void CreateContact()
-    {
-        Console.Clear();
-        Console.WriteLine(new string('#', 80));
-        Console.WriteLine("Create Contact");
-        Console.WriteLine(new string('#', 80));
-        Console.WriteLine();
-
-        Console.Write("Enter First Name: ");
-        string fname = Console.ReadLine()!;
-        Console.Write("Enter Last Name: ");
-        string lname = Console.ReadLine()!;
-        Console.Write("Enter Phone: ");
-        string phone = Console.ReadLine()!;
-        Console.Write("Enter Email: ");
-        string email = Console.ReadLine()!;
-
-       if(Confirm("Do you want to create this contact?", YES))
-        {
-        Contact c = new Contact(fname, lname, phone, email);
-        allContacts.Add(c);
-        page = PageCount(allContacts, size);
-            Console.WriteLine("Contact created successfully.");
-            }
-            else
-            {
-                Console.WriteLine("Contact creation cancelled.");
-        }
-    }
-
-    private void ReviewContact()
-    {
-        Console.WriteLine("Review Contact");
-    }
-
-    private void UpdateContact()
-    {
-        Console.WriteLine("Update Contact");
-    }
 
     private void DeleteContact()
     {
-        Console.WriteLine("Delete Contact");
+        if (allContacts.Count == 0)
+        {
+            Console.WriteLine("No contacts.");
+            PressEnterToContinue();
+            return;
+        }
+
+        int index = GetInt("Index", 1, allContacts.Count) - 1;
+
+        ReviewContact(index);
+
+        if (Confirm("Delete?", NO))
+        {
+            allContacts.RemoveAt(index);
+            Console.WriteLine("Deleted.");
+        }
+
+        PressEnterToContinue();
     }
 
     private void FindContacts()
     {
-        Console.WriteLine("Find Contacts");
+        Console.Write("Search: ");
+        string s = Console.ReadLine()!.ToLower();
+
+        var results = allContacts.Where(c =>
+            (c.GetFName()?.ToLower().Contains(s) ?? false) ||
+            (c.GetLname()?.ToLower().Contains(s) ?? false) ||
+            (c.GetPhone()?.Contains(s) ?? false) ||
+            (c.GetEmail()?.ToLower().Contains(s) ?? false)
+        ).ToList();
+
+        ShowContacts(results, 1, size);
+        PressEnterToContinue();
     }
 
     private void OrderContacts()
     {
-        Console.WriteLine("Order Contacts");
+        Console.WriteLine("[1] First Name\n[2] Last Name");
+        int op = GetInt("Option", 1, 2);
+
+        allContacts = (op == 1)
+            ? allContacts.OrderBy(c => c.GetFName()).ToList()
+            : allContacts.OrderBy(c => c.GetLname()).ToList();
+
+        Console.WriteLine("Ordered.");
+        PressEnterToContinue();
     }
 
     private void DeduplicateContacts()
     {
-        Console.WriteLine("Deduplicate Contacts");
+        int before = allContacts.Count;
+        allContacts = allContacts.Distinct().ToList();
+        int removed = before - allContacts.Count;
+
+        Console.WriteLine($"Removed {removed} duplicates.");
+        PressEnterToContinue();
     }
 
     private void Exit()
@@ -303,53 +242,109 @@ if(contacts.Count <= 0)
         isExit = true;
     }
 
-    private int GetInt(string prompt, int mim, int max)
+    private int GetInt(string prompt, int min, int max)
     {
-      string options = $"{mim}-{max}";
-
-        Console.WriteLine(prompt + $" [{options}] ");
-        string awnser = Console.ReadLine()!;
         int value;
-
-        while(!int.TryParse(awnser, out value) || value < mim || value > max)
+        do
         {
-            Console.WriteLine("ERROR: Invalid input. Please try again.");
-            Console.WriteLine(prompt + $" [{options}] ");
-            awnser = Console.ReadLine()!;
- }
+            Console.Write($"{prompt} [{min}-{max}]: ");
+        } while (!int.TryParse(Console.ReadLine(), out value) || value < min || value > max);
 
         return value;
     }
-    private string GetOption(string prompt, string[] validOptions, string defaultOption)
+
+    private string GetOption(string prompt, string[] options, string def)
     {
-        string options = string.Join('/', validOptions);
-
-        Console.WriteLine(prompt + $" [{options}] ({defaultOption}) ");
-        string option = Console.ReadLine()!.ToUpper();
-
-        if(string.IsNullOrWhiteSpace(option)){ option = defaultOption;}
-
-        while(!validOptions.Contains(option))
+        string input;
+        do
         {
-            Console.WriteLine("ERROR: Invalid input. Please try again.");
-            Console.WriteLine(prompt + $" [{options}] ({defaultOption}) ");
-            option = Console.ReadLine()!.ToUpper();
+            Console.Write($"{prompt} ({string.Join("/", options)}) [{def}]: ");
+            input = Console.ReadLine()!.ToUpper();
+            if (string.IsNullOrWhiteSpace(input)) input = def;
+        }
+        while (!options.Contains(input));
 
-            if(string.IsNullOrWhiteSpace(option)){ option = defaultOption;}
+        return input;
+    }
+
+    private bool Confirm(string prompt, string def)
+    {
+        return GetOption(prompt, YES_NO, def) == YES;
+    }
+
+    private static int PageCount(List<Contact> contacts, int size)
+    {
+        return Math.Max(1, (int)Math.Ceiling(contacts.Count / (double)size));
+    }
+
+    private void NextPage() => page = Math.Clamp(page + 1, 1, PageCount(allContacts, size));
+    private void PrevPage() => page = Math.Clamp(page - 1, 1, PageCount(allContacts, size));
+    private void GotoPage() => page = GetInt("Page", 1, PageCount(allContacts, size));
+    private void PageSize()
+    {
+        size = GetInt("Size", 1, Console.WindowHeight - 10);
+        page = 1;
+    }
+
+    private void CreateContact()
+    {
+        Console.Write("First Name: ");
+        string f = Console.ReadLine()!;
+        Console.Write("Last Name: ");
+        string l = Console.ReadLine()!;
+        Console.Write("Phone: ");
+        string p = Console.ReadLine()!;
+        Console.Write("Email: ");
+        string e = Console.ReadLine()!;
+
+        if (Confirm("Create?", YES))
+        {
+            allContacts.Add(new Contact(f, l, p, e));
+            Console.WriteLine("Created.");
         }
 
-        return option;
+        PressEnterToContinue();
     }
 
-    private bool Confirm(string prompt, string defaultOption)
+    private void ReviewContact()
     {
-        return GetOption(prompt, YES_NO, defaultOption) == YES;
+        int i = GetInt("Index", 1, allContacts.Count) - 1;
+        ReviewContact(i);
+        PressEnterToContinue();
     }
 
-     private static int PageCount(List<Contact> contacts, int size)
+    private void ReviewContact(int i)
     {
-        return (int)Math.Max(1, Math.Ceiling(contacts.Count / (double)size));
+        var c = allContacts[i];
+        Console.WriteLine($"{c.GetFName()} {c.GetLname()}");
+        Console.WriteLine(c.GetPhone());
+        Console.WriteLine(c.GetEmail());
     }
 
+    private void UpdateContact()
+    {
+        int i = GetInt("Index", 1, allContacts.Count) - 1;
+        var c = allContacts[i];
+
+        if (Confirm("Update name?", NO))
+        {
+            Console.Write("First: ");
+            c.SetFname(Console.ReadLine()!);
+            Console.Write("Last: ");
+            c.SetLname(Console.ReadLine()!);
+        }
+
+        if (Confirm("Update phone?", NO))
+        {
+            c.SetPhone(Console.ReadLine()!);
+        }
+
+        if (Confirm("Update email?", NO))
+        {
+            c.SetEmail(Console.ReadLine()!);
+        }
+
+        Console.WriteLine("Updated.");
+        PressEnterToContinue();
+    }
 }
-
